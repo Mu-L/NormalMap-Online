@@ -24,12 +24,24 @@
 
 NMO_DisplacementMap = new function(){
 
+	this.getInitialContrast = function(){
+		return -0.5;
+	};
+
+	this.getInitialSmoothing = function(){
+		return 0;
+	};
+
+	this.getInitialInvertDisplacement = function(){
+		return false;
+	};
+
 	this.displacement_bias = 0;
-	this.smoothing = 0;
+	this.smoothing = this.getInitialSmoothing();
 	this.timer = 0;
 	this.current_disp_scale = 0;
-	this.contrast = -0.5;
-	this.invert_displacement = false;
+	this.contrast = this.getInitialContrast();
+	this.invert_displacement = this.getInitialInvertDisplacement();
 	this.displacement_canvas = document.createElement("canvas");
 
 	this.renderer;

@@ -23,13 +23,33 @@
 
 NMO_AmbientOccMap = new function(){
 
+	this.getInitialStrength = function(){
+		return 0.5;
+	};
+
+	this.getInitialMean = function(){
+		return 1;
+	};
+
+	this.getInitialRange = function(){
+		return 1;
+	};
+
+	this.getInitialSmoothing = function(){
+		return 0;
+	};
+
+	this.getInitialInvertAO = function(){
+		return false;
+	};
+
 	this.ao_canvas = document.createElement("canvas");
-	this.ao_smoothing = 0;
-	this.ao_strength = 0.5;
-	this.ao_mean = 1;
-	this.ao_range = 1;
+	this.ao_smoothing = this.getInitialSmoothing();
+	this.ao_strength = this.getInitialStrength();
+	this.ao_mean = this.getInitialMean();
+	this.ao_range = this.getInitialRange();
 	this.ao_level = 1;
-	this.invert_ao = false;
+	this.invert_ao = this.getInitialInvertAO();
 	this.timer = 0;
 
 	this.renderer;

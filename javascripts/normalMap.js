@@ -22,15 +22,39 @@
  */
 
 var NMO_NormalMap = new function(){
+	
+	this.getInitialStrength = function(){
+		return 2.5;
+	};
 
-	this.invert_red = false;
-	this.invert_green = false;
-	this.invert_source = false;
-	this.height_offset = true;
-	this.smoothing = 0;
-	this.strength = 2.5;
-	this.level = 7;
-	this.normal_type = "sobel";
+	this.getInitialLevel = function(){
+		return 7;
+	};
+
+	this.getInitialSmoothing = function(){
+		return 0;
+	};
+
+	this.getInitialNormalType = function(){
+		return "sobel";
+	};
+
+	this.getInitialInvertRGS = function(){
+		return false;
+	};
+
+	this.getInitialHeightOffset = function(){
+		return true;
+	};
+	
+	this.invert_red = this.getInitialInvertRGS();
+	this.invert_green = this.getInitialInvertRGS();
+	this.invert_source = this.getInitialInvertRGS();
+	this.height_offset = this.getInitialHeightOffset();
+	this.smoothing = this.getInitialSmoothing();
+	this.strength = this.getInitialStrength();
+	this.level = this.getInitialLevel();
+	this.normal_type = this.getInitialNormalType();
 	this.normal_canvas = document.createElement("canvas");
 
 	this.getNextPowerOf2 = function(nmb){
