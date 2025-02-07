@@ -325,7 +325,7 @@
 					</td>
 					<td class="options">
 						<div>
-							<select onChange="NMO_NormalMap.setNormalSetting('type', this.options[this.selectedIndex].value)">
+							<select id="normal_type" onChange="NMO_NormalMap.setNormalSetting('type', this.options[this.selectedIndex].value)">
 								<option value="sobel">Sobel</option>
 								<option value="scharr">Scharr</option>
 							</select>
@@ -350,7 +350,16 @@
 					</td>
 					<td class="options">
 						<div>
-							<input id="height_offset" type="checkbox" onclick="NMO_NormalMap.heightOffset()" />-1 to +1
+							<input id="height_offset" type="checkbox" onclick="NMO_NormalMap.heightOffset()" checked="true" />-1 to +1
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="option_text">
+					</td>
+					<td class="options">
+						<div id="resetBtn">
+							<button onclick="NMO_Main.resetNormalMapSettings();">Reset to default</button>
 						</div>
 					</td>
 				</tr>
@@ -399,7 +408,15 @@
 						</div>
 					</td>
 				</tr>
-
+				<tr>
+					<td class="option_text">
+					</td>
+					<td class="options">
+						<div id="resetBtn">
+							<button onclick="NMO_Main.resetDisplacementMapSettings();">Reset to default</button>
+						</div>
+					</td>
+				</tr>
 				<!--
 				<tr>
 					<td>
@@ -489,6 +506,15 @@
 							</div>
 						</td>
 					</tr>
+					<tr>
+						<td class="option_text">
+						</td>
+						<td class="options">
+							<div id="resetBtn">
+								<button onclick="NMO_Main.resetAmbientOccMapSettings();">Reset to default</button>
+							</div>
+						</td>
+					</tr>
 				</table>
 			</div>
 
@@ -543,11 +569,20 @@
 						</td>
 						<td class="options">
 							<div>
-								<select onChange="NMO_SpecularMap.setSpecularSetting('spec_falloff', this.options[this.selectedIndex].value)">
+								<select id="falloff_type" onChange="NMO_SpecularMap.setSpecularSetting('spec_falloff', this.options[this.selectedIndex].value)">
 									<option value="no">No</option>
 									<option value="linear" selected>Linear</option>
 									<option value="square">Square</option>
 								</select>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="option_text">
+						</td>
+						<td class="options">
+							<div id="resetBtn">
+								<button onclick="NMO_Main.resetSpecularMapSettings();">Reset to default</button>
 							</div>
 						</td>
 					</tr>

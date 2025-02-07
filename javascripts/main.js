@@ -392,4 +392,102 @@ var NMO_Main = new function(){
 			}, image_type, qual);
 		}
 	}
+
+	this.resetNormalMapSettings = function() {
+		var initialStrength = NMO_NormalMap.getInitialStrength(); 
+		var initialLevel = NMO_NormalMap.getInitialLevel();
+		var initialSmoothing = NMO_NormalMap.getInitialSmoothing();
+		var initialNormalType = NMO_NormalMap.getInitialNormalType();
+		var initialInvertRGS = NMO_NormalMap.getInitialInvertRGS();
+		var initialHeightOffset = NMO_NormalMap.getInitialHeightOffset();
+
+		document.getElementById('strength_slider').value = initialStrength;
+		document.getElementById('strength_nmb').value = initialStrength;
+		document.getElementById('level_slider').value = initialLevel;
+		document.getElementById('level_nmb').value = initialLevel;
+		document.getElementById('blur_sharp_slider').value = initialSmoothing;
+		document.getElementById('blur_sharp_nmb').value = initialSmoothing;
+		document.getElementById("normal_type").selectedIndex = 0;
+		document.getElementById('invert_r').checked = initialInvertRGS;
+		document.getElementById('invert_g').checked = initialInvertRGS;
+		document.getElementById('invert_height').checked = initialInvertRGS;
+		document.getElementById('height_offset').checked = initialHeightOffset;
+	
+		NMO_NormalMap.setNormalSetting('strength', initialStrength);
+		NMO_NormalMap.setNormalSetting('level', initialLevel);
+		NMO_NormalMap.setNormalSetting('blur_sharp', initialSmoothing);
+		NMO_NormalMap.setNormalSetting('type', initialNormalType);
+
+		if (NMO_NormalMap.invert_red != initialInvertRGS) NMO_NormalMap.invertRed();
+		if (NMO_NormalMap.invert_green != initialInvertRGS) NMO_NormalMap.invertGreen();
+		if (NMO_NormalMap.invert_source != initialInvertRGS) NMO_NormalMap.invertSource();
+		if (NMO_NormalMap.height_offset != initialHeightOffset) NMO_NormalMap.heightOffset();
+	};
+	
+	this.resetDisplacementMapSettings = function() {
+		var initialContrast = NMO_DisplacementMap.getInitialContrast();
+		var initialSmoothing = NMO_DisplacementMap.getInitialSmoothing();
+		var initialInvertDisplacement = NMO_DisplacementMap.getInitialInvertDisplacement();
+
+		document.getElementById('dm_contrast_slider').value = initialContrast;
+		document.getElementById('dm_contrast_nmb').value = initialContrast;
+		document.getElementById('dm_blur_sharp_slider').value = initialSmoothing;
+		document.getElementById('dm_blur_sharp_nmb').value = initialSmoothing;
+		document.getElementById('invert_height').checked = initialInvertDisplacement;
+	
+		NMO_DisplacementMap.setDisplacementSetting('contrast', initialContrast);
+		NMO_DisplacementMap.setDisplacementSetting('blur_sharp', initialSmoothing);
+		
+		if (NMO_DisplacementMap.invert_displacement != initialInvertDisplacement){
+			NMO_DisplacementMap.invertRed();
+			NMO_DisplacementMap.setDisplacementContrast();
+		}
+	};
+	
+	this.resetAmbientOccMapSettings = function() {
+		var initialStrength = NMO_AmbientOccMap.getInitialStrength();
+		var initialMean = NMO_AmbientOccMap.getInitialMean();
+		var initialRange = NMO_AmbientOccMap.getInitialRange();
+		var initialSmoothing = NMO_AmbientOccMap.getInitialSmoothing();
+		var initialInvertAO = NMO_AmbientOccMap.getInitialInvertAO();
+
+		document.getElementById('ao_strength_slider').value = initialStrength;
+		document.getElementById('ao_strength_nmb').value = initialStrength;
+		document.getElementById('ao_mean_slider').value = initialMean;
+		document.getElementById('ao_mean_nmb').value = initialMean;
+		document.getElementById('ao_range_slider').value = initialRange;
+		document.getElementById('ao_range_nmb').value = initialRange;
+		document.getElementById('ao_blur_sharp_slider').value = initialSmoothing;
+		document.getElementById('ao_blur_sharp_nmb').value = initialSmoothing;
+		document.getElementById('invert_AO').checked = initialInvertAO;
+	
+		NMO_AmbientOccMap.setAOSetting('strength', initialStrength);
+		NMO_AmbientOccMap.setAOSetting('mean', initialMean);
+		NMO_AmbientOccMap.setAOSetting('range', initialRange);
+		NMO_AmbientOccMap.setAOSetting('blur_sharp', initialSmoothing);
+
+		if (NMO_AmbientOccMap.invert_ao != initialInvertAO){
+			NMO_AmbientOccMap.invertAO();
+		}
+	};
+	
+	this.resetSpecularMapSettings = function() {
+		var initialStrength = NMO_SpecularMap.getInitialStrength();
+		var initialMean = NMO_SpecularMap.getInitialMean();
+		var initialRange = NMO_SpecularMap.getInitialRange();
+		var initialFallOffType = NMO_SpecularMap.getInitialFallOffType();
+
+		document.getElementById('specular_strength_slider').value = initialStrength;
+		document.getElementById('specular_strength_nmb').value = initialStrength;
+		document.getElementById('specular_mean_slider').value = initialMean;
+		document.getElementById('specular_mean_nmb').value = initialMean;
+		document.getElementById('specular_range_slider').value = initialRange;
+		document.getElementById('specular_range_nmb').value = initialRange;
+		document.getElementById("falloff_type").selectedIndex = 1;
+	
+		NMO_SpecularMap.setSpecularSetting('spec_strength', initialStrength);
+		NMO_SpecularMap.setSpecularSetting('spec_mean', initialMean);
+		NMO_SpecularMap.setSpecularSetting('spec_range', initialRange);
+		NMO_SpecularMap.setSpecularSetting('spec_falloff', initialFallOffType);
+	};
 }

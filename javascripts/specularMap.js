@@ -29,13 +29,29 @@ NMO_SpecularMap = new function(){
 	    SQUARE : 2
 	}
 
+	this.getInitialStrength = function(){
+		return 1;
+	};
+
+	this.getInitialMean = function(){
+		return 1;
+	};
+
+	this.getInitialRange = function(){
+		return 1;
+	};
+
+	this.getInitialFallOffType = function(){
+		return "linear";
+	};
+
 	//this.timer = 0;
-	this.specular_mean = 0.8;
-	this.specular_range = 1;
-	this.specular_strength = 1;
+	this.specular_mean = this.getInitialMean();
+	this.specular_range = this.getInitialRange();
+	this.specular_strength = this.getInitialStrength();
 	this.specular_invert = 0;
 	this.specular_canvas = document.createElement("canvas");
-	this.specular_falloff = this.FallOffEnum.SQUARE;
+	this.specular_falloff = this.FallOffEnum.LINEAR;
 	this.smoothing = 0;
 
 	this.renderer;

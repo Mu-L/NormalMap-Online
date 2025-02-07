@@ -36,6 +36,11 @@ div.pictures_view_cell {
     float:left;
 }
 
+div#resetBtn{
+	text-align: right;
+	float:right;
+}
+
 .helper {
     display: inline-block;
     min-height: 300px;
@@ -108,23 +113,26 @@ div.column_btn{
 }
 
 div.column_top {
-	height: 180px;
+	height: 200px;
 }
 
 td.option_text{
 	text-align: left;
 	padding-left:20px;
 	padding-right:10px;
+	white-space: nowrap;
+    	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 td.options{
 	text-align: left;
+	height:20px;
 }
 
 table.options_top{
 	border-spacing:0px; 
 	width:100%; 
-	padding-top:10px;
 }
 
 div.tabs{
