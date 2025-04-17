@@ -77,6 +77,9 @@ NMO_FileDrop = new function(){
 		await NMO_Main.downloadImage("AmbientOcclusionMap");
 		document.getElementById('file_name').value = baseName + "_specular";
 		await NMO_Main.downloadImage("SpecularMap");
+
+		// Reset the input file name
+		document.getElementById('file_name').value = "";
 	};
 	
 
