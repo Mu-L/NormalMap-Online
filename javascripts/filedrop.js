@@ -52,19 +52,46 @@ NMO_FileDrop = new function(){
 		    	await NMO_FileDrop.readImage(evt.target.files[0], "height", ""); // files is a FileList of File objects. List some properties.
 			else if (evt.target.param === 'multiple_height')
 			{
-				for (var i=0; i<evt.target.files.length; i++)
-				{
-					console.log("Processing ", evt.target.files[i]);
-					await NMO_FileDrop.readImage(evt.target.files[i], "height", "", NMO_FileDrop.downloadAll, evt.target.files[i].name);
-				}
+				await NMO_FileDrop.processBatchFiles(evt.target.files)
 			}
-				
-				
-	    	else
-	    		await NMO_FileDrop.readImage(evt.target.files[0], "pictures", evt.target.param); // files is a FileList of File objects. List some properties.
+	    else
+	    	await NMO_FileDrop.readImage(evt.target.files[0], "pictures", evt.target.param); // files is a FileList of File objects. List some properties.
 		}
 	};
-	
+		
+	this.processBatchFiles = async function(files) {
+    const includeNormal = document.getElementById('normal_tick').checked;
+    const includeDisplacement = document.getElementById('displacement_tick').checked;
+    const includeAmbient = document.getElementById('ambient_tick').checked;
+    const includeSpecular = document.getElementById('specular_tick').checked;
+
+    for (let i = 0; i < files.length; i++) {
+        await this.readImage(files[i], "height", "", async (name) => {
+            const baseName = name.replace(/\.[^/.]+$/, "");
+            
+            if (includeNormal) {
+                document.getElementById('file_name').value = `${baseName}_normal`;
+                await NMO_Main.downloadImage("NormalMap");
+            }
+            
+            if (includeDisplacement) {
+                document.getElementById('file_name').value = `${baseName}_displacement`;
+                await NMO_Main.downloadImage("DisplacementMap");
+            }
+            
+            if (includeAmbient) {
+                document.getElementById('file_name').value = `${baseName}_ambient`;
+                await NMO_Main.downloadImage("AmbientOcclusionMap");
+            }
+            
+            if (includeSpecular) {
+                document.getElementById('file_name').value = `${baseName}_specular`;
+                await NMO_Main.downloadImage("SpecularMap");
+            }
+        }, files[i].name);
+    }
+	};
+
 	this.downloadAll = async function(name){
 		// Remove the file extension from name
 		const baseName = name.replace(/\.[^/.]+$/, "");
