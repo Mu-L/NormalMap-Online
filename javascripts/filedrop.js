@@ -45,34 +45,67 @@ NMO_FileDrop = new function(){
 
 
 	// Setup the dnd listeners.
-	this.handleFileSelect = function(evt) {
+	this.handleFileSelect = async function(evt) {
+		if (typeof evt == 'undefined')
+			return;
+		
 		console.log(evt.target.param);
-		if (typeof evt !== 'undefined'){
-	    	if (evt.target.param === 'height')
-		    	NMO_FileDrop.readImage(evt.target.files[0], "height", ""); // files is a FileList of File objects. List some properties.
-			else if (evt.target.param === 'multiple_height')
-			{
-				for (var i=0; i<evt.target.files.length; i++)
-				{
-					NMO_FileDrop.readImage(evt.target.files[i], "height", "", NMO_FileDrop.downloadAll, evt.target.files[i].name);
+		if (evt.target.param === 'height')
+			await NMO_FileDrop.readImage(evt.target.files[0], "height", ""); // files is a FileList of File objects. List some properties.
+		else if (evt.target.param === 'multiple_height')
+			await NMO_FileDrop.processBatchFiles(evt.target.files)
+	    else
+	    	await NMO_FileDrop.readImage(evt.target.files[0], "pictures", evt.target.param); // files is a FileList of File objects. List some properties.
+	};
+		
+	this.processBatchFiles = async function(files) {
+		const includeNormal = document.getElementById('normal_tick').checked;
+		const includeDisplacement = document.getElementById('displacement_tick').checked;
+		const includeAmbient = document.getElementById('ambient_tick').checked;
+		const includeSpecular = document.getElementById('specular_tick').checked;
+
+		for (let i = 0; i < files.length; i++) {
+			await this.readImage(files[i], "height", "", async (name) => {
+				const baseName = name.replace(/\.[^/.]+$/, "");
+				
+				if (includeNormal) {
+					document.getElementById('file_name').value = `${baseName}_normal`;
+					await NMO_Main.downloadImage("NormalMap");
 				}
-			}
 				
+				if (includeDisplacement) {
+					document.getElementById('file_name').value = `${baseName}_displacement`;
+					await NMO_Main.downloadImage("DisplacementMap");
+				}
 				
-	    	else
-	    		NMO_FileDrop.readImage(evt.target.files[0], "pictures", evt.target.param); // files is a FileList of File objects. List some properties.
+				if (includeAmbient) {
+					document.getElementById('file_name').value = `${baseName}_ambient`;
+					await NMO_Main.downloadImage("AmbientOcclusionMap");
+				}
+				
+				if (includeSpecular) {
+					document.getElementById('file_name').value = `${baseName}_specular`;
+					await NMO_Main.downloadImage("SpecularMap");
+				}
+			}, files[i].name);
 		}
 	};
-	
-	this.downloadAll = function(name){
-		document.getElementById('file_name').value = name + "_normal";
-		NMO_Main.downloadImage("NormalMap");
-		document.getElementById('file_name').value = name + "_displacement";
-		NMO_Main.downloadImage("DisplacementMap");
-		document.getElementById('file_name').value = name + "_ambient";
-		NMO_Main.downloadImage("AmbientOcclusionMap");
-		document.getElementById('file_name').value = name + "_specular";
-		NMO_Main.downloadImage("SpecularMap");
+
+	this.downloadAll = async function(name){
+		// Remove the file extension from name
+		const baseName = name.replace(/\.[^/.]+$/, "");
+
+		document.getElementById('file_name').value = baseName + "_normal";
+		await NMO_Main.downloadImage("NormalMap");
+		document.getElementById('file_name').value = baseName + "_displacement";
+		await NMO_Main.downloadImage("DisplacementMap");
+		document.getElementById('file_name').value = baseName + "_ambient";
+		await NMO_Main.downloadImage("AmbientOcclusionMap");
+		document.getElementById('file_name').value = baseName + "_specular";
+		await NMO_Main.downloadImage("SpecularMap");
+
+		// Reset the input file name
+		document.getElementById('file_name').value = "";
 	};
 	
 
@@ -123,65 +156,78 @@ NMO_FileDrop = new function(){
 
 
 
-	this.readImage = function(imgFile, type, direction, readImageCallback=false, name=""){
+	this.readImage = async function(imgFile, type, direction, readImageCallback=false, name=""){
 		//console.log(imgFile);
-		if(!imgFile.type.match(/image.*/)){
+		if(!imgFile.type.match(/image.*/))
+		{
 			console.log("The dropped file is not an image: ", imgFile.type);
 			return;
 		}
+		console.log("Loading " + imgFile.type + " image");
 
-		var reader = new FileReader();
-		reader.onload = function(e){
-			var data = e.target.result;
-			if (imgFile.type == "image/targa"){
-				//console.log(uint8ArrayNew);
-				var tga = new TGA();
-				tga.load(new Uint8Array(data));
-				data = tga.getDataURL('image/png');
-			}
-			if (type === "height")
-				NMO_FileDrop.loadHeightmap(data);
-			else if (type === "pictures")
-				NMO_FileDrop.loadHeightFromPictures(data, direction);
+		let isTarga = imgFile.type == "image/targa" || imgFile.type == "image/x-targa" || imgFile.type == "image/x-tga";
+
+		const data = await new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = e => resolve(e.target.result);
+			reader.onerror = reject;
 			
-			if (readImageCallback != false)
-				readImageCallback(name);
-		};
-		if (imgFile.type == "image/targa")
-			reader.readAsArrayBuffer(imgFile);
-		else
-			reader.readAsDataURL(imgFile);
+			if (isTarga)
+				reader.readAsArrayBuffer(imgFile);
+			else
+				reader.readAsDataURL(imgFile);
+		});
+
+		let processedData = data;
+		if (isTarga) 
+		{
+			console.log("Loading targa");
+			let tga = new TGA();
+			tga.load(new Uint8Array(data))
+			processedData = tga.getDataURL('image/png');
+		}
+
+		if (type === "height")
+			await NMO_FileDrop.loadHeightmap(processedData);
+		else if (type === "pictures")
+			await NMO_FileDrop.loadHeightFromPictures(processedData, direction);
+		
+		if (readImageCallback)
+			await readImageCallback(name);
+    
 	};
-
-
 
 
 	this.loadHeightmap = function(source){
-		this.height_image = new Image();
+		return new Promise((resolve) => {
+			this.height_image = new Image();
+			
+			this.height_image.onload = async function()
+			{
+				console.log("loading height image");
+							
+				NMO_RenderNormalview.renderNormalview_update("height");
 				
-		this.height_image.onload = function(){
-			console.log("loading height image");
-						
-			NMO_RenderNormalview.renderNormalview_update("height");
-			
-			NMO_NormalMap.createNormalMap();
-			NMO_RenderNormalview.height_map.needsUpdate = true;
-			
-			NMO_NormalMap.setNormalSetting('strength', document.getElementById('strength_nmb').value);
-			NMO_NormalMap.setNormalSetting('level', document.getElementById('level_nmb').value);
-			NMO_NormalMap.setNormalSetting('blur_sharp', document.getElementById('blur_sharp_nmb').value);
-			
-			NMO_DisplacementMap.createDisplacementMap(document.getElementById('dm_contrast_nmb').value);
-			NMO_DisplacementMap.setDisplacementScale(-document.getElementById('dm_strength_nmb').value);
-			
-			NMO_AmbientOccMap.createAmbientOcclusionTexture();
-			NMO_SpecularMap.createSpecularTexture();
-		};
+				NMO_NormalMap.createNormalMap();
+				NMO_RenderNormalview.height_map.needsUpdate = true;
+				
+				NMO_NormalMap.setNormalSetting('strength', document.getElementById('strength_nmb').value);
+				NMO_NormalMap.setNormalSetting('level', document.getElementById('level_nmb').value);
+				NMO_NormalMap.setNormalSetting('blur_sharp', document.getElementById('blur_sharp_nmb').value);
+				
+				NMO_DisplacementMap.createDisplacementMap(document.getElementById('dm_contrast_nmb').value);
+				NMO_DisplacementMap.setDisplacementScale(-document.getElementById('dm_strength_nmb').value);
+				
+				NMO_AmbientOccMap.createAmbientOcclusionTexture();
+				NMO_SpecularMap.createSpecularTexture();
 
-		this.height_image.src = source;
+				resolve();
+			};
+			
+			this.height_image.onerror = () => resolve();
+			this.height_image.src = source;
+		});
 	};
-
-
 
 
 	this.initHeightMap = function(){
